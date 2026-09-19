@@ -11,3 +11,10 @@
 # below is what actually grants access.
 
 SUBSYSTEM=="usb", ATTR{idVendor}=="054c", ATTR{idProduct}=="09af", TAG+="uaccess", MODE="0660", GROUP="plugdev"
+
+# Auto power-on (cinematic mode) when the PU is plugged in — activates
+# systemd/psvr-autostart.service (see systemd/README.md for install
+# steps). ENV{DEVTYPE}=="usb_device" matters: this composite device
+# fires an "add" event once per interface too (9 of them), and without
+# this filter the service would be activated 10 times per plug-in.
+ACTION=="add", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="054c", ATTR{idProduct}=="09af", TAG+="systemd", ENV{SYSTEMD_WANTS}+="psvr-autostart.service"

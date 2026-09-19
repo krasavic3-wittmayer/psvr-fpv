@@ -7,6 +7,7 @@ import sys
 
 from . import __version__, protocol
 from .device import PsvrDevice, PsvrError, find_raw_device
+from .state import read_last_mode, write_last_mode
 
 
 def cmd_probe(_args: argparse.Namespace) -> int:
@@ -51,7 +52,20 @@ def cmd_mode(args: argparse.Namespace) -> int:
             dev.vr_mode_on()
         else:
             dev.cinematic_mode_on()
+    write_last_mode(args.mode)
     print(args.mode)
+    return 0
+
+
+def cmd_toggle(_args: argparse.Namespace) -> int:
+    next_mode = "vr" if read_last_mode() == "cinematic" else "cinematic"
+    with PsvrDevice() as dev:
+        if next_mode == "vr":
+            dev.vr_mode_on()
+        else:
+            dev.cinematic_mode_on()
+    write_last_mode(next_mode)
+    print(next_mode)
     return 0
 
 
@@ -67,6 +81,7 @@ def cmd_fpv(args: argparse.Namespace) -> int:
                 size=args.size,
                 distance=args.distance,
             )
+    write_last_mode(args.mode)
     print(f"ready: {args.mode}")
     return 0
 
@@ -91,6 +106,10 @@ def build_parser() -> argparse.ArgumentParser:
     mode_parser = sub.add_parser("mode", help="switch display mode")
     mode_parser.add_argument("--mode", choices=["cinematic", "vr"], required=True)
     mode_parser.set_defaults(func=cmd_mode)
+
+    sub.add_parser(
+        "toggle", help="flip cinematic<->vr, based on the last mode this tool set"
+    ).set_defaults(func=cmd_toggle)
 
     fpv_parser = sub.add_parser("fpv", help="power on + mode + cinematic screen settings, in one command")
     fpv_parser.add_argument("--mode", choices=["cinematic", "vr"], default="cinematic")

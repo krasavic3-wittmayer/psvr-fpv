@@ -49,6 +49,7 @@ psvr-display probe          # enumerate the PU on USB, no state change
 psvr-display on              # power on, wait for confirmation
 psvr-display off             # power off
 psvr-display mode --mode cinematic|vr
+psvr-display toggle           # flip cinematic<->vr based on the last mode this tool set
 psvr-display fpv              # on + mode + cinematic screen settings, one shot
 ```
 
@@ -57,6 +58,12 @@ if it doesn't see an HDMI signal within roughly 90s of powering on —
 run your `xrandr --output <connector> --auto` (or whatever your
 compositor's equivalent is) right after, don't leave it idle. See
 `docs/display.md` for the observed timing.
+
+## Auto power-on
+
+`systemd/` has a udev-triggered systemd unit that powers the PU on in
+cinematic mode as soon as it's plugged in, no command needed. See
+[`systemd/README.md`](systemd/README.md).
 
 ## psvr-sbs (optional)
 

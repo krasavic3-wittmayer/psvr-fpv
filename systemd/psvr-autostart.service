@@ -1,0 +1,8 @@
+[Unit]
+Description=Auto power-on the PSVR PU (cinematic mode) when plugged in
+# Activated by udev (99-psvr.rules), not by any target — do not enable
+# this unit directly, and do not add a [Install] section for it.
+
+[Service]
+Type=oneshot
+ExecStart=/home/michal/Projects/psvr-fpv/systemd/psvr-autostart.sh
