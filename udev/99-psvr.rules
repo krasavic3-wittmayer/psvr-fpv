@@ -1,10 +1,13 @@
-# Grant the locally logged-in user access to the PSVR1 Processing Unit
-# (054c:09af) without root or a setuid binary.
+# Grant local user access to the PSVR1 Processing Unit (054c:09af)
+# without root or a setuid binary.
 #
 # Install: sudo cp udev/99-psvr.rules /etc/udev/rules.d/
 #          sudo udevadm control --reload-rules && sudo udevadm trigger
+# Then add yourself to plugdev and re-login (group membership needs a new
+# session to take effect): sudo usermod -aG plugdev "$USER"
+#
+# uaccess is the systemd-logind path and is tried first; on setups where
+# it doesn't apply (session/seat not recognised by logind), MODE+GROUP
+# below is what actually grants access.
 
-SUBSYSTEM=="usb", ATTR{idVendor}=="054c", ATTR{idProduct}=="09af", TAG+="uaccess"
-
-# Fallback for non-systemd-logind setups (uncomment if uaccess doesn't apply):
-# SUBSYSTEM=="usb", ATTR{idVendor}=="054c", ATTR{idProduct}=="09af", MODE="0660", GROUP="plugdev"
+SUBSYSTEM=="usb", ATTR{idVendor}=="054c", ATTR{idProduct}=="09af", TAG+="uaccess", MODE="0660", GROUP="plugdev"
