@@ -15,8 +15,11 @@ implementation spec (protocol, architecture, game plan, known risks) and
 
 ## Status
 
-Early — USB control code and CLI are written but not yet verified on
-hardware. See the game plan in the spec for the milestone checklist.
+Milestone 1 (steps 1-6) and step 7 (90/120 Hz) confirmed on real
+hardware — see [`docs/display.md`](docs/display.md) for the results and
+a couple of findings not documented anywhere else (PU auto-disconnect
+without an HDMI signal; both high-refresh modes working despite the
+EDID's declared 150 MHz limit).
 
 ## Install
 
@@ -30,8 +33,13 @@ Requires `libusb-1.0` (system package) and the udev rule in
 
 ```
 sudo cp udev/99-psvr.rules /etc/udev/rules.d/
+sudo usermod -aG plugdev "$USER"   # then log out and back in
 sudo udevadm control --reload-rules && sudo udevadm trigger
 ```
+
+`uaccess` alone did not grant access on the machine this was verified
+on (see `docs/display.md`); the rule includes a `plugdev` `MODE`/`GROUP`
+fallback that did. Group membership only applies to new sessions.
 
 ## Usage
 
@@ -42,6 +50,12 @@ psvr-display off             # power off
 psvr-display mode --mode cinematic|vr
 psvr-display fpv              # on + mode + cinematic screen settings, one shot
 ```
+
+**Send video promptly after `on`/`fpv`.** The PU drops off USB entirely
+if it doesn't see an HDMI signal within roughly 90s of powering on —
+run your `xrandr --output <connector> --auto` (or whatever your
+compositor's equivalent is) right after, don't leave it idle. See
+`docs/display.md` for the observed timing.
 
 ## License
 

@@ -112,6 +112,21 @@ whether it survives a fresh `on` from cold every time or was aided by
 the connection already being warmed up. Re-verify if step 9 shows
 different behaviour.
 
+## FPV mode (step 8, `psvr-display fpv`)
+
+Confirmed cold-to-ready in one command: `psvr-display fpv` (power on +
+cinematic mode + default screen settings) then `xrandr --output HDMI-1
+--auto` gives a clean floating cinematic screen from a fully powered-off
+PU. Per the spec's own architecture reasoning (Spec 3), `fpv` does not
+call xrandr itself — display mode-setting stays documentation, not code
+— so the xrandr step is still separate; see the README's "send video
+promptly" note for why the ordering matters.
+
+Panel color looks slightly more green than the laptop's own screen when
+compared side by side — expected panel-to-panel variation (different
+OLED panel, different white point/gamut), not a `psvr-display` issue;
+no color management is implemented and none is in scope.
+
 ## Known risks / findings
 
 - **PU disconnects from USB entirely if no HDMI signal arrives within
