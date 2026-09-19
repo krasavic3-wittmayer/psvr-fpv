@@ -39,7 +39,10 @@ starts at boot on its own. Don't add an `[Install]` section to it.
 before installing on a different machine:**
 
 - `PSVR_DISPLAY_BIN` — path to the `psvr-display` venv binary
-- `PSVR_XAUTHORITY` / `PSVR_X_DISPLAY` — this machine's X session
+- `PSVR_XAUTHORITY` / `PSVR_X_DISPLAY` — this machine's X session.
+  `~/.Xauthority` is *not* it here — the `ly` display manager keeps the
+  real cookie at `/run/user/<uid>/lyxauth` instead. Find yours with
+  `ps aux | grep Xorg` (look for the `-auth` argument).
 - `PSVR_CONNECTOR` — `HDMI-1` on this machine (`docs/display.md`);
   check `xrandr --listmonitors` if different
 
