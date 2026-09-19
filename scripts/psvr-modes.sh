@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 # Add the PSVR PU's undeclared 90/120 Hz modelines via xrandr (X11 only).
 #
-# Reported, single-source (pyPSVR edid-hacking/hook_me_up.sh): same detailed
-# timing as the EDID's native 60 Hz mode, pixel clock scaled up. The EDID
-# declares a 150 MHz max TMDS clock, which the 120 Hz mode's 297 MHz exceeds
-# — expect xrandr --addmode to be refused; see docs/display.md for the
-# result on this machine. Run manually, step by step; do not assume success.
+# Same detailed timing as the EDID's native 60 Hz mode, pixel clock scaled
+# up (pyPSVR edid-hacking/hook_me_up.sh). The EDID declares a 150 MHz max
+# TMDS clock, which both the 90 Hz (222.75 MHz) and 120 Hz (297 MHz) modes
+# exceed — on the machine in docs/display.md both were accepted and ran
+# clean anyway, so don't assume the EDID's figure is a hard limit on your
+# hardware; verify with your own run and record the result.
 #
 # Usage: scripts/psvr-modes.sh <CONNECTOR>
 #   e.g. scripts/psvr-modes.sh HDMI-1

@@ -1,7 +1,7 @@
 # Display verification
 
-Status: steps 1-6 of the game plan run and confirmed on hardware
-(2026-09-19). **Milestone 1 complete.**
+Status: steps 1-7 of the game plan run and confirmed on hardware
+(2026-09-19). **Milestone 1 complete. High refresh (step 7) also confirmed working.**
 
 ## Machine
 
@@ -78,6 +78,39 @@ background, "R" label) — correctly mapped, not swapped. Confirms the
 panel's left/right halves correspond to the naive left-half-of-frame /
 right-half-of-frame split, which matters for building `psvr-sbs` (step
 10) correctly later.
+
+## High refresh (step 7, `scripts/psvr-modes.sh`)
+
+**90 Hz and 120 Hz both confirmed working, clean image, stable, on this
+machine.** This overturns the spec's stated uncertainty ("no published
+Linux success found") — both undeclared high-refresh modes work despite
+the EDID's declared 150 MHz max TMDS clock:
+
+```
+xrandr --addmode HDMI-1 1920x1080_90    # 222.75 MHz — accepted
+xrandr --addmode HDMI-1 1920x1080_120   # 297.00 MHz — accepted
+xrandr --output HDMI-1 --mode 1920x1080_90    # active, clean image
+xrandr --output HDMI-1 --mode 1920x1080_120   # active, clean image, held >8s stable
+```
+
+Verified at 120 Hz: image stays clean over time (not just an
+instantaneous handshake), PU stays enumerated on USB, cinematic-mode
+head tracking (the PU's internal IMU reprojection) works normally. No
+kernel-level validation blocked either mode on this Intel iGPU/driver —
+the EDID's 150 MHz figure is apparently conservative/wrong rather than
+a real sink limit, consistent with the spec's own suspicion that the PU
+"under-reports its capability deliberately."
+
+(Earlier session note, corrected: I initially misread a truncated
+`xrandr` listing and reported the 120 Hz mode as silently rejected by
+`--addmode`. It wasn't — both modes were accepted immediately; the
+120 Hz entry was just cut off by an over-narrow `grep -A6`.)
+
+Not yet tested: whether this holds under actual sim rendering load
+(PRIME dGPU→iGPU copy at 120 Hz, not just a static desktop mirror), and
+whether it survives a fresh `on` from cold every time or was aided by
+the connection already being warmed up. Re-verify if step 9 shows
+different behaviour.
 
 ## Known risks / findings
 
