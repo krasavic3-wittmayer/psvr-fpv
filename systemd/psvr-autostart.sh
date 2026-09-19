@@ -25,9 +25,20 @@ PSVR_XAUTHORITY=/run/user/1000/lyxauth
 PSVR_X_DISPLAY=:0
 PSVR_CONNECTOR=HDMI-1   # see docs/display.md — machine-specific, check `xrandr --listmonitors`
 
+# 120Hz modeline (docs/display.md, step 7): same detailed timing as the
+# EDID's native 60Hz mode, pixel clock scaled up. Confirmed clean and
+# stable on this machine despite the EDID's declared 150MHz TMDS limit
+# — not guaranteed on other hardware, see scripts/psvr-modes.sh.
+PSVR_MODE_NAME="1920x1080_120"
+PSVR_MODELINE="297.00 1920 2008 2052 2200 1080 1084 1089 1125 +HSync +Vsync"
+
 # Give the kernel a moment to finish binding HID drivers to the new device.
 sleep 2
 
 "$PSVR_DISPLAY_BIN" fpv
 
-DISPLAY="$PSVR_X_DISPLAY" XAUTHORITY="$PSVR_XAUTHORITY" /usr/bin/xrandr --output "$PSVR_CONNECTOR" --auto
+export DISPLAY="$PSVR_X_DISPLAY" XAUTHORITY="$PSVR_XAUTHORITY"
+/usr/bin/xrandr --output "$PSVR_CONNECTOR" --auto
+/usr/bin/xrandr --newmode "$PSVR_MODE_NAME" $PSVR_MODELINE || true   # already exists after the first run
+/usr/bin/xrandr --addmode "$PSVR_CONNECTOR" "$PSVR_MODE_NAME" || true
+/usr/bin/xrandr --output "$PSVR_CONNECTOR" --mode "$PSVR_MODE_NAME"

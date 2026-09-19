@@ -4,6 +4,14 @@ Status: steps 1-7 of the game plan run and confirmed on hardware
 (2026-09-19). **Milestone 1 complete. High refresh (step 7) also confirmed working.**
 Step 8 (`fpv` command) and step 10 (`psvr-sbs`) also confirmed — see below.
 
+**Real-world flight test (2026-09-19): ~1 hour of FPV flying, VR mode +
+`psvr-sbs`, at 120Hz, no issues.** The whole stack — USB control,
+120Hz mode, `psvr-sbs` compositing, `psvr-autostart` plug-in bring-up —
+held up under actual sustained use, not just short bench tests. Best
+outcome the project's own uncertainty markers allowed for; the "cinematic
+latency unmeasured, may force VR mode + SBS" concern (Known Problem #7)
+turned out moot in practice.
+
 ## Machine
 
 MSI Cyborg 15 A12V — Intel iGPU + Nvidia dGPU, no MUX switch (assumed).
