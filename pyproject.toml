@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "psvr-display"
+version = "0.1.0"
+description = "Wake a Sony PSVR1 Processing Unit over USB and drive it as a plain HDMI display, for FPV drone simulators on Linux."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+dependencies = [
+    "pyusb>=1.2",
+]
+
+[project.scripts]
+psvr-display = "psvr_display.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

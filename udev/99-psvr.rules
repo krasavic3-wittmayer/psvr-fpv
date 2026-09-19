@@ -1,0 +1,10 @@
+# Grant the locally logged-in user access to the PSVR1 Processing Unit
+# (054c:09af) without root or a setuid binary.
+#
+# Install: sudo cp udev/99-psvr.rules /etc/udev/rules.d/
+#          sudo udevadm control --reload-rules && sudo udevadm trigger
+
+SUBSYSTEM=="usb", ATTR{idVendor}=="054c", ATTR{idProduct}=="09af", TAG+="uaccess"
+
+# Fallback for non-systemd-logind setups (uncomment if uaccess doesn't apply):
+# SUBSYSTEM=="usb", ATTR{idVendor}=="054c", ATTR{idProduct}=="09af", MODE="0660", GROUP="plugdev"
