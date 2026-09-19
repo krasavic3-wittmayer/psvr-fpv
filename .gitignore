@@ -8,3 +8,7 @@ venv/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+
+# C build output (psvr-sbs)
+psvr-sbs/psvr-sbs
+*.o

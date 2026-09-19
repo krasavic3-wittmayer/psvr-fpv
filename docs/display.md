@@ -2,6 +2,7 @@
 
 Status: steps 1-7 of the game plan run and confirmed on hardware
 (2026-09-19). **Milestone 1 complete. High refresh (step 7) also confirmed working.**
+Step 8 (`fpv` command) and step 10 (`psvr-sbs`) also confirmed — see below.
 
 ## Machine
 
@@ -126,6 +127,40 @@ Panel color looks slightly more green than the laptop's own screen when
 compared side by side — expected panel-to-panel variation (different
 OLED panel, different white point/gamut), not a `psvr-display` issue;
 no color management is implemented and none is in scope.
+
+## psvr-sbs (step 10)
+
+Built and confirmed working on hardware — VR mode's raw left/right split
+duplicated into a proper "same image both eyes" view, matching real FPV
+goggles. See `../psvr-sbs/README.md` for usage; the interesting part is
+a real bug found and fixed during bring-up:
+
+**`XCopyArea` from the root window silently produces solid black on
+this driver stack, no X error, nothing in the logs.** First implementation
+used `XCopyArea` (as most "read the screen" example code does) and it
+compiled, ran, connected to the right windows, but every frame was
+black. Diagnosed by isolating variables with small standalone test
+programs: a plain `XFillRectangle` into the destination window worked
+(so window creation/positioning was fine), but `XCopyArea` reading a
+known-good source region produced black while `scrot` reading the exact
+same region worked. Root cause: this is an Intel iGPU/DRI3/Present
+driver stack, where a client's actually-rendered content is presented
+straight to scanout and never lands anywhere `XCopyArea` can read it
+back from — `XGetImage`/`XShmGetImage` ask the server to rasterize the
+real screen content instead (the same mechanism `scrot` uses), which
+works correctly. Switched to `XShmGetImage`/`XShmPutImage` (same
+mechanism, shared-memory buffer instead of a full per-frame wire
+transfer) — confirmed working both via screenshot comparison and live
+on the headset.
+
+Also found: **`xrandr --setmonitor` on a live primary output can
+destabilize the session.** Redefining `eDP-1`'s RandR monitor while the
+desktop was running was followed by a hard freeze requiring a reboot.
+Not conclusively proven as the cause (a second, similar-looking freeze
+turned out to be unrelated — an accidentally-killed IDE, not a real
+system crash) but not ruled out either, so `psvr-sbs` documents
+`--source-geometry` as the safer default: it reads a screen region
+directly, without touching any output's RandR monitor definition.
 
 ## Known risks / findings
 
